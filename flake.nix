@@ -9,8 +9,8 @@
     in
       {
         packages.${system}.default = pkgs.rustPlatform.buildRustPackage {
-          pname = "clinews";
-          version = "0.2.0";
+          pname = "readlines";
+          version = "0.0.1";
           src = ./.;
           cargoLock = {
             lockFile = ./Cargo.lock;
