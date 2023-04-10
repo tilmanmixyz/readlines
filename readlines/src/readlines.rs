@@ -5,7 +5,7 @@ const CYAN: Color32 = Color32::from_rgb(106, 149, 137);
 use std::borrow::Cow;
 
 use eframe::{
-    egui::{self, FontDefinitions, FontFamily,Color32, Label, Layout, Hyperlink, Separator},
+    egui::{self, FontDefinitions, FontFamily,Color32, Label, Layout, Hyperlink, Separator, Ui, TopBottomPanel, Button},
 };
 struct NewsCardData {
     title: String,
@@ -74,5 +74,23 @@ impl Readlines {
             ui.add_space(PADDING);
             ui.add(Separator::default());
         }
+    }
+
+    pub fn render_top_panel(&self, ctx: &egui::CtxRef) {
+        TopBottomPanel::top("controls").show(ctx, |ui| {
+            ui.add_space(5.0);
+            egui::menu::bar(ui, |ui| {
+                ui.with_layout(Layout::left_to_right(), |ui| {
+                    ui.add(Label::new("📓").text_style(egui::TextStyle::Heading));
+                });
+                // Controls
+                ui.with_layout(Layout::right_to_left(), |ui| {
+                    let close_btn = ui.add(Button::new("❌").text_style(egui::TextStyle::Body));
+                    let refresh_btn = ui.add(Button::new("🔄").text_style(egui::TextStyle::Body));
+                    let theme_btn = ui.add(Button::new("🌙").text_style(egui::TextStyle::Body));
+                });
+            });
+            ui.add_space(5.0);
+        });
     }
 }
