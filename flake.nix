@@ -28,6 +28,7 @@
             src = ./.;
             doCheck = true;
             pname = "readlines";
+            version = "0.0.1";
             nativeBuildInputs = with pkgs; [
               pkg-config
               makeWrapper
