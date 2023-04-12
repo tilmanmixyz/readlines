@@ -1,6 +1,8 @@
 const PADDING: f32 = 5.0;
 const WHITE: Color32 = Color32::from_rgb(220, 215, 186);
+const BLACK: Color32 = Color32::from_rgb(29, 32, 33);
 const CYAN: Color32 = Color32::from_rgb(106, 149, 137);
+const RED: Color32 = Color32::from_rgb(195, 64, 67);
 
 use std::borrow::Cow;
 
@@ -8,12 +10,14 @@ use eframe::egui::{
     self, Button, Color32, FontDefinitions, FontFamily, Hyperlink, Label, Layout, Separator,
     TopBottomPanel, Ui,
 };
+use serde::{Deserialize, Serialize};
 struct NewsCardData {
     title: String,
     url: String,
     desc: String,
 }
 
+#[derive(Deserialize, Serialize)]
 pub struct ReadlinesConfig {
     pub dark_mode: bool,
 }
@@ -30,9 +34,12 @@ impl Readlines {
             desc: format!("Lorem Ipsum {}", a),
             url: format!("https://example.org/{}", a),
         });
+
+        let config: ReadlinesConfig = confy::load("readlines").unwrap_or_default();
+        
         Readlines {
             articles: Vec::from_iter(iter),
-            config: ReadlinesConfig::new(),
+            config,
         }
     }
 
@@ -64,7 +71,11 @@ impl Readlines {
             // render title
             ui.add_space(PADDING);
             let title = format!("# {}", a.title);
-            ui.colored_label(WHITE, title);
+            if self.config.dark_mode {
+                ui.colored_label(WHITE, title);
+            } else {
+                ui.colored_label(BLACK, title);
+            }
 
             // render description
             ui.add_space(PADDING);
@@ -73,7 +84,11 @@ impl Readlines {
 
             // render hyperlinks to article
             ui.add_space(PADDING);
-            ui.style_mut().visuals.hyperlink_color = CYAN;
+            if self.config.dark_mode {
+                ui.style_mut().visuals.hyperlink_color = CYAN;
+            } else {
+                ui.style_mut().visuals.hyperlink_color = RED;
+            }
             ui.with_layout(Layout::right_to_left(), |ui| {
                 ui.add(Hyperlink::new(&a.url).text("Read more..."));
             });
@@ -122,5 +137,11 @@ impl Readlines {
 impl ReadlinesConfig {
     fn new() -> ReadlinesConfig {
         ReadlinesConfig { dark_mode: false }
+    }
+}
+
+impl Default for ReadlinesConfig {
+    fn default() -> Self {
+        ReadlinesConfig { dark_mode: Default::default() }
     }
 }
