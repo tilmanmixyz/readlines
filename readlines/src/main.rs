@@ -4,7 +4,7 @@ const PADDING: f32 = 5.0;
 const CYAN: Color32 = Color32::from_rgb(106, 149, 137);
 
 use eframe::{
-    egui::{self, Color32, CtxRef, Hyperlink, ScrollArea, Separator, TopBottomPanel, Ui, Vec2},
+    egui::{self, Color32, CtxRef, Hyperlink, ScrollArea, Separator, TopBottomPanel, Ui, Vec2, Visuals},
     epi::App,
     run_native,
 };
@@ -20,8 +20,15 @@ impl App for Readlines {
         self.configure_fonts(ctx);
     }
 
-    fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut eframe::epi::Frame<'_>) {
-        self.render_top_panel(ctx);
+    fn update(&mut self, ctx: &egui::CtxRef, frame: &mut eframe::epi::Frame<'_>) {
+
+        if self.config.dark_mode {
+            ctx.set_visuals(Visuals::dark());
+        } else {
+            ctx.set_visuals(Visuals::light());
+        }
+        
+        self.render_top_panel(ctx, frame);
         egui::CentralPanel::default().show(ctx, |ui| {
             render_header(ui);
             ScrollArea::auto_sized().show(ui, |ui| {

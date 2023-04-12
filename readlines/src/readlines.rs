@@ -4,8 +4,9 @@ const CYAN: Color32 = Color32::from_rgb(106, 149, 137);
 
 use std::borrow::Cow;
 
-use eframe::{
-    egui::{self, FontDefinitions, FontFamily,Color32, Label, Layout, Hyperlink, Separator, Ui, TopBottomPanel, Button},
+use eframe::egui::{
+    self, Button, Color32, FontDefinitions, FontFamily, Hyperlink, Label, Layout, Separator,
+    TopBottomPanel, Ui,
 };
 struct NewsCardData {
     title: String,
@@ -13,8 +14,13 @@ struct NewsCardData {
     desc: String,
 }
 
+pub struct ReadlinesConfig {
+    pub dark_mode: bool,
+}
+
 pub struct Readlines {
     articles: Vec<NewsCardData>,
+    pub config: ReadlinesConfig,
 }
 
 impl Readlines {
@@ -26,6 +32,7 @@ impl Readlines {
         });
         Readlines {
             articles: Vec::from_iter(iter),
+            config: ReadlinesConfig::new(),
         }
     }
 
@@ -52,9 +59,8 @@ impl Readlines {
         ctx.set_fonts(font_def);
     }
 
-    pub fn render_news_cards(&self, ui: &mut eframe::egui::Ui) {
+    pub fn render_news_cards(&self, ui: &mut Ui) {
         for a in &self.articles {
-
             // render title
             ui.add_space(PADDING);
             let title = format!("# {}", a.title);
@@ -64,7 +70,7 @@ impl Readlines {
             ui.add_space(PADDING);
             let desc = Label::new(&a.desc).text_style(eframe::egui::TextStyle::Button);
             ui.add(desc);
-            
+
             // render hyperlinks to article
             ui.add_space(PADDING);
             ui.style_mut().visuals.hyperlink_color = CYAN;
@@ -76,7 +82,7 @@ impl Readlines {
         }
     }
 
-    pub fn render_top_panel(&self, ctx: &egui::CtxRef) {
+    pub fn render_top_panel(&mut self, ctx: &egui::CtxRef, frame: &mut eframe::epi::Frame<'_>) {
         TopBottomPanel::top("controls").show(ctx, |ui| {
             ui.add_space(5.0);
             egui::menu::bar(ui, |ui| {
@@ -86,11 +92,35 @@ impl Readlines {
                 // Controls
                 ui.with_layout(Layout::right_to_left(), |ui| {
                     let close_btn = ui.add(Button::new("❌").text_style(egui::TextStyle::Body));
+                    // Closeing applicarion
+                    if close_btn.clicked() {
+                        frame.quit();
+                    }
                     let refresh_btn = ui.add(Button::new("🔄").text_style(egui::TextStyle::Body));
-                    let theme_btn = ui.add(Button::new("🌙").text_style(egui::TextStyle::Body));
+                    let theme_btn = ui.add(
+                        Button::new({
+                            if self.config.dark_mode {
+                                "🌞"
+                            } else {
+                                "🌙"
+                            }
+                        })
+                        .text_style(egui::TextStyle::Body),
+                    );
+
+                    // Theme changer
+                    if theme_btn.clicked() {
+                        self.config.dark_mode = !self.config.dark_mode;
+                    }
                 });
             });
             ui.add_space(5.0);
         });
+    }
+}
+
+impl ReadlinesConfig {
+    fn new() -> ReadlinesConfig {
+        ReadlinesConfig { dark_mode: false }
     }
 }
