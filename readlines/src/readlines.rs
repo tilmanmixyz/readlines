@@ -8,7 +8,7 @@ use std::borrow::Cow;
 
 use eframe::egui::{
     self, Button, Color32, FontDefinitions, FontFamily, Hyperlink, Label, Layout, Separator,
-    TopBottomPanel, Ui,
+    TopBottomPanel, Ui, CtxRef, Window, Response,
 };
 use serde::{Deserialize, Serialize};
 struct NewsCardData {
@@ -20,6 +20,7 @@ struct NewsCardData {
 #[derive(Deserialize, Serialize)]
 pub struct ReadlinesConfig {
     pub dark_mode: bool,
+    pub api_key: String,
 }
 
 pub struct Readlines {
@@ -132,16 +133,30 @@ impl Readlines {
             ui.add_space(5.0);
         });
     }
-}
 
-impl ReadlinesConfig {
-    fn new() -> ReadlinesConfig {
-        ReadlinesConfig { dark_mode: false }
+    pub fn render_config(&mut self, ctx: &CtxRef) {
+        Window::new("Configuration").show(ctx, |ui| {
+            ui.label("Enter your https://newsapi.org API-Key here");
+            let text_input: Response = ui.text_edit_singleline(&mut self.config.api_key);
+            tracing::error!("{}", &self.config.api_key);
+        });
     }
 }
 
+// impl ReadlinesConfig {
+//     fn new() -> ReadlinesConfig {
+//         ReadlinesConfig {
+//             dark_mode: false,
+//             api_key: String::new(),
+//         }
+//     }
+// }
+
 impl Default for ReadlinesConfig {
     fn default() -> Self {
-        ReadlinesConfig { dark_mode: Default::default() }
+        ReadlinesConfig {
+            dark_mode: false,
+            api_key: String::new(),
+        }
     }
 }

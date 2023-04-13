@@ -27,6 +27,8 @@ impl App for Readlines {
         } else {
             ctx.set_visuals(Visuals::light());
         }
+
+        self.render_config(ctx);
         
         self.render_top_panel(ctx, frame);
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -67,7 +69,9 @@ fn render_footer(ui: &mut Ui, ctx: &CtxRef) {
 }
 
 fn main() {
-    let mut native_options = eframe::NativeOptions::default();
+    tracing_subscriber::fmt::init();
+
+    let mut native_options: eframe::NativeOptions = eframe::NativeOptions::default();
     native_options.initial_window_size = Some(Vec2::new(540.0, 960.0));
     let app = Readlines::new();
     run_native(Box::new(app), native_options);
