@@ -167,15 +167,3 @@ fn map_response_err(code: Option<String>) -> NewsApiError {
         NewsApiError::UnknownError
     }
 }
-
-// pub fn get_articles(url: &str, api_key: &str) -> Result<Articles, NewsApiError> {
-//     let response = ureq::get(&url)
-//         .set("X-Api-Key", api_key)
-//         .call()?
-//         .into_string()?;
-// 
-//     let articles: Articles = serde_json::from_str(&response)?;
-// 
-// 
-//     Ok(articles)
-// }
