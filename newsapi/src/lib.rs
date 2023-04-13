@@ -40,7 +40,7 @@ impl NewsApiResponse {
 pub struct Article {
     title: String,
     url: String,
-    desc: Option<String>,
+    description: Option<String>,
 }
 
 impl Article {
@@ -53,7 +53,7 @@ impl Article {
     }
 
     pub fn desc(&self) -> Option<&String> {
-        self.desc.as_ref()
+        self.description.as_ref()
     }
 }
 
@@ -94,7 +94,7 @@ impl NewsApi {
         NewsApi {
             api_key: api_key.to_string(),
             endpoint: Endpoint::TopHeadlines,
-            country: Country::De,
+            country: Country::Us,
         }
     }
 
