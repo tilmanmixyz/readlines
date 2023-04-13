@@ -28,7 +28,9 @@ impl App for Readlines {
             ctx.set_visuals(Visuals::light());
         }
 
-        self.render_config(ctx);
+        if !self.api_key_initialized {
+            self.render_config(ctx);
+        }
         
         self.render_top_panel(ctx, frame);
         egui::CentralPanel::default().show(ctx, |ui| {

@@ -26,6 +26,7 @@ pub struct ReadlinesConfig {
 pub struct Readlines {
     articles: Vec<NewsCardData>,
     pub config: ReadlinesConfig,
+    pub api_key_initialized: bool,
 }
 
 impl Readlines {
@@ -41,6 +42,7 @@ impl Readlines {
         Readlines {
             articles: Vec::from_iter(iter),
             config,
+            api_key_initialized: false,
         }
     }
 
@@ -153,6 +155,8 @@ impl Readlines {
                 }) {
                     tracing::error!("Saving app state failed {}", e);
                 }
+
+                self.api_key_initialized = true;
 
                 tracing::error!("api key set");
             }
