@@ -161,15 +161,6 @@ impl Readlines {
     }
 }
 
-// impl ReadlinesConfig {
-//     fn new() -> ReadlinesConfig {
-//         ReadlinesConfig {
-//             dark_mode: false,
-//             api_key: String::new(),
-//         }
-//     }
-// }
-
 impl Default for ReadlinesConfig {
     fn default() -> Self {
         ReadlinesConfig {
