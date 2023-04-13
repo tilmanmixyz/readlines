@@ -4,7 +4,7 @@ const BLACK: Color32 = Color32::from_rgb(29, 32, 33);
 const CYAN: Color32 = Color32::from_rgb(106, 149, 137);
 const RED: Color32 = Color32::from_rgb(195, 64, 67);
 
-use std::borrow::Cow;
+use std::{borrow::Cow, sync::mpsc::Receiver};
 
 use eframe::egui::{
     self, Button, Color32, FontDefinitions, FontFamily, Hyperlink, Label, Layout, Separator,
@@ -27,6 +27,7 @@ pub struct Readlines {
     pub articles: Vec<NewsCardData>,
     pub config: ReadlinesConfig,
     pub api_key_initialized: bool,
+    pub news_rx: Option<Receiver<NewsCardData>>,
 }
 
 impl Readlines {
@@ -37,6 +38,7 @@ impl Readlines {
             api_key_initialized: !config.api_key.is_empty(),
             articles: vec![],
             config,
+            news_rx: None,
         }
     }
 
@@ -156,6 +158,19 @@ impl Readlines {
             }
             tracing::error!("{}", &self.config.api_key);
         });
+    }
+
+    pub fn preload_articles(&mut self) {
+        if let Some(rx) = &self.news_rx {
+            match rx.try_recv() {
+                Ok(news_data) => {
+                    self.articles.push(news_data);
+                }
+                Err(e) => {
+                    tracing::error!("Received Error message: {}", e);
+                }
+            }
+        }
     }
 }
 
