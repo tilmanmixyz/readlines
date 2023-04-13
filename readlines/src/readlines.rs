@@ -161,14 +161,13 @@ impl Readlines {
     }
 
     pub fn preload_articles(&mut self) {
-        if let Some(rx) = &self.news_rx {
-            match rx.try_recv() {
-                Ok(news_data) => {
-                    self.articles.push(news_data);
-                }
-                Err(e) => {
-                    tracing::error!("Received Error message: {}", e);
-                }
+        let Some(rx) = &self.news_rx else { return };
+        match rx.try_recv() {
+            Ok(news_data) => {
+                self.articles.push(news_data);
+            }
+            Err(e) => {
+                tracing::error!("Received Error message: {}", e);
             }
         }
     }
