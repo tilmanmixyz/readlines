@@ -127,6 +127,14 @@ impl Readlines {
                     // Theme changer
                     if theme_btn.clicked() {
                         self.config.dark_mode = !self.config.dark_mode;
+                        if let Err(e) = confy::store("readlines", ReadlinesConfig {
+                            dark_mode: self.config.dark_mode,
+                            api_key: self.config.api_key.to_string(),
+                        }) {
+                            tracing::error!("Saving app state failed {}", e);
+                        }
+
+                        tracing::error!("Theme set");
                     }
                 });
             });
