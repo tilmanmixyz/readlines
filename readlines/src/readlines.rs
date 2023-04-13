@@ -11,10 +11,10 @@ use eframe::egui::{
     TopBottomPanel, Ui, CtxRef, Window, Response,
 };
 use serde::{Deserialize, Serialize};
-struct NewsCardData {
-    title: String,
-    url: String,
-    desc: String,
+pub struct NewsCardData {
+    pub title: String,
+    pub url: String,
+    pub desc: String,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -24,25 +24,19 @@ pub struct ReadlinesConfig {
 }
 
 pub struct Readlines {
-    articles: Vec<NewsCardData>,
+    pub articles: Vec<NewsCardData>,
     pub config: ReadlinesConfig,
     pub api_key_initialized: bool,
 }
 
 impl Readlines {
     pub fn new() -> Readlines {
-        let iter = (0..20).map(|a| NewsCardData {
-            title: format!("title {}", a),
-            desc: format!("Lorem Ipsum {}", a),
-            url: format!("https://example.org/{}", a),
-        });
-
         let config: ReadlinesConfig = confy::load("readlines").unwrap_or_default();
         
         Readlines {
-            articles: Vec::from_iter(iter),
+            api_key_initialized: !config.api_key.is_empty(),
+            articles: vec![],
             config,
-            api_key_initialized: false,
         }
     }
 

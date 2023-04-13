@@ -4,11 +4,26 @@ const PADDING: f32 = 5.0;
 const CYAN: Color32 = Color32::from_rgb(106, 149, 137);
 
 use eframe::{
-    egui::{self, Color32, CtxRef, Hyperlink, ScrollArea, Separator, TopBottomPanel, Ui, Vec2, Visuals},
+    egui::{self, Color32, CtxRef, Hyperlink, ScrollArea, Separator, TopBottomPanel, Ui, Vec2, Visuals, Response},
     epi::App,
     run_native,
 };
-use readlines::Readlines;
+use newsapi::{NewsApi, NewsApiError, NewsApiResponse};
+use readlines::{Readlines, NewsCardData};
+
+fn fetch_articles(api_key: &str, articles: &mut Vec<NewsCardData>) {
+    if let Ok(response) = NewsApi::new(api_key).fetch() {
+        let response_articles =  response.articles();
+        for a in response_articles.iter() {
+            let news = NewsCardData {
+                title: a.title().to_string(),
+                url: a.url().to_string(),
+                desc: a.desc().map(|s| s.to_string()).unwrap_or("...".to_string()),
+            };
+            articles.push(news);
+        }
+    }
+}
 
 impl App for Readlines {
     fn setup(
@@ -17,6 +32,7 @@ impl App for Readlines {
         _frame: &mut eframe::epi::Frame<'_>,
         _storage: Option<&dyn eframe::epi::Storage>,
     ) {
+        fetch_articles(&self.config.api_key, &mut self.articles);
         self.configure_fonts(ctx);
     }
 
