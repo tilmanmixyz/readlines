@@ -138,6 +138,16 @@ impl Readlines {
         Window::new("Configuration").show(ctx, |ui| {
             ui.label("Enter your https://newsapi.org API-Key here");
             let text_input: Response = ui.text_edit_singleline(&mut self.config.api_key);
+            if text_input.lost_focus() && ui.input().key_pressed(egui::Key::Enter) {
+                if let Err(e) = confy::store("readlines", ReadlinesConfig {
+                    dark_mode: self.config.dark_mode,
+                    api_key: self.config.api_key.to_string(),
+                }) {
+                    tracing::error!("Saving app state failed {}", e);
+                }
+
+                tracing::error!("api key set");
+            }
             tracing::error!("{}", &self.config.api_key);
         });
     }
