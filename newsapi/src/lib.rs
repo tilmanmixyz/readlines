@@ -98,19 +98,21 @@ impl NewsApi {
         }
     }
 
-    pub fn endpoint(&mut self, endpoint: Endpoint) -> &mut NewsApi{
+    pub fn endpoint(&mut self, endpoint: Endpoint) -> &mut NewsApi {
         self.endpoint = endpoint;
         self
     }
 
-    pub fn country(&mut self, country: Country) -> &mut NewsApi{
+    pub fn country(&mut self, country: Country) -> &mut NewsApi {
         self.country = country;
         self
     }
 
     fn prepare_url(&self) -> Result<String, NewsApiError> {
         let mut url = Url::parse(BASE_URL)?;
-        url.path_segments_mut().unwrap().push(&self.endpoint.to_string());
+        url.path_segments_mut()
+            .unwrap()
+            .push(&self.endpoint.to_string());
 
         let country = format!("country={}", self.country.to_string());
         url.set_query(Some(&country));
@@ -120,14 +122,13 @@ impl NewsApi {
 
     pub fn fetch(&self) -> Result<NewsApiResponse, NewsApiError> {
         let url = self.prepare_url()?;
-        let req = ureq::get(&url)
-            .set("X-Api-Key", &self.api_key);
+        let req = ureq::get(&url).set("X-Api-Key", &self.api_key);
 
         let res: NewsApiResponse = req.call()?.into_json()?;
 
         match res.status.as_str() {
             "ok" => Ok(res),
-            _ => Err(map_response_err(res.code))
+            _ => Err(map_response_err(res.code)),
         }
     }
 
@@ -152,7 +153,7 @@ impl NewsApi {
 
         match res.status.as_str() {
             "ok" => Ok(res),
-            _ => Err(map_response_err(res.code))
+            _ => Err(map_response_err(res.code)),
         }
     }
 }
