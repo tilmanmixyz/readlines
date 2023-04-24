@@ -17,7 +17,7 @@ pub struct NewsCardData {
     pub desc: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Default, Deserialize, Serialize)]
 pub struct ReadlinesConfig {
     pub dark_mode: bool,
     pub api_key: String,
@@ -173,11 +173,11 @@ impl Readlines {
     }
 }
 
-impl Default for ReadlinesConfig {
-    fn default() -> Self {
-        ReadlinesConfig {
-            dark_mode: false,
-            api_key: String::new(),
-        }
-    }
-}
+// impl Default for ReadlinesConfig {
+//     fn default() -> Self {
+//         ReadlinesConfig {
+//             dark_mode: false,
+//             api_key: String::new(),
+//         }
+//     }
+// }

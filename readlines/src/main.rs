@@ -7,14 +7,14 @@ use std::{thread, sync::mpsc::channel};
 
 use eframe::{
     egui::{
-        self, Color32, CtxRef, Hyperlink, Response, ScrollArea, Separator, TopBottomPanel, Ui,
+        self, Color32, CtxRef, Hyperlink, ScrollArea, Separator, TopBottomPanel, Ui,
         Vec2, Visuals,
     },
     epi::App,
     run_native,
 };
 
-use newsapi::{NewsApi, NewsApiError, NewsApiResponse};
+use newsapi::{NewsApi};
 use readlines::{NewsCardData, Readlines};
 
 impl App for Readlines {
@@ -112,8 +112,10 @@ fn render_footer(ui: &mut Ui, ctx: &CtxRef) {
 fn main() {
     tracing_subscriber::fmt::init();
 
-    let mut native_options: eframe::NativeOptions = eframe::NativeOptions::default();
-    native_options.initial_window_size = Some(Vec2::new(540.0, 960.0));
+    let native_options: eframe::NativeOptions = eframe::NativeOptions {
+        initial_window_size: Some(Vec2::new(540.0, 960.0)),
+        ..Default::default()
+    };
     let app = Readlines::new();
     run_native(Box::new(app), native_options);
 }
