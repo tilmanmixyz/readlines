@@ -14,7 +14,7 @@ use eframe::{
     run_native,
 };
 
-use newsapi::{NewsApi};
+use newsapi::NewsApi;
 use readlines::{NewsCardData, Readlines};
 
 impl App for Readlines {
