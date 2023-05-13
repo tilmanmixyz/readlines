@@ -3,15 +3,14 @@ mod readlines;
 const PADDING: f32 = 5.0;
 const CYAN: Color32 = Color32::from_rgb(106, 149, 137);
 
-use std::{thread, sync::mpsc::channel};
+pub(crate) use std::{sync::mpsc::channel, thread};
 
 use eframe::{
-    egui::{
-        self, Color32, CtxRef, Hyperlink, ScrollArea, Separator, TopBottomPanel, Ui,
-        Vec2, Visuals,
-    },
     epi::App,
     run_native,
+};
+use eframe::egui::{
+    self, Color32, CtxRef, Hyperlink, ScrollArea, Separator, TopBottomPanel, Ui, Vec2, Visuals,
 };
 
 use newsapi::NewsApi;
@@ -24,28 +23,28 @@ impl App for Readlines {
         _frame: &mut eframe::epi::Frame<'_>,
         _storage: Option<&dyn eframe::epi::Storage>,
     ) {
-    let api_key = self.config.api_key.to_string();
+        let api_key = self.config.api_key.to_string();
 
-    let (news_tx, news_rx) = channel();
+        let (news_tx, news_rx) = channel();
 
-    self.news_rx = Some(news_rx);
-    
-    thread::spawn(move || {
-        if let Ok(response) = NewsApi::new(&api_key).fetch() {
-            let response_articles = response.articles();
-            for a in response_articles.iter() {
-                let news = NewsCardData {
-                    title: a.title().to_string(),
-                    url: a.url().to_string(),
-                    desc: a.desc().map(|s| s.to_string()).unwrap_or("...".to_string()),
-                };
+        self.news_rx = Some(news_rx);
 
-                if let Err(e) = news_tx.send(news) {
-                    tracing::error!("Error sending news data {}", e);
+        thread::spawn(move || {
+            if let Ok(response) = NewsApi::new(&api_key).fetch() {
+                let response_articles = response.articles();
+                for a in response_articles.iter() {
+                    let news = NewsCardData {
+                        title: a.title().to_string(),
+                        url: a.url().to_string(),
+                        desc: a.desc().map(|s| s.to_string()).unwrap_or("...".to_string()),
+                    };
+
+                    if let Err(e) = news_tx.send(news) {
+                        tracing::error!("Error sending news data {}", e);
+                    }
                 }
             }
-        }
-    });
+        });
         self.configure_fonts(ctx);
     }
 

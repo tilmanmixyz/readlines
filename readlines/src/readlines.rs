@@ -7,8 +7,8 @@ const RED: Color32 = Color32::from_rgb(195, 64, 67);
 use std::{borrow::Cow, sync::mpsc::Receiver};
 
 use eframe::egui::{
-    self, Button, Color32, FontDefinitions, FontFamily, Hyperlink, Label, Layout, Separator,
-    TopBottomPanel, Ui, CtxRef, Window, Response,
+    self, Button, Color32, CtxRef, FontDefinitions, FontFamily, Hyperlink, Label, Layout, Response,
+    Separator, TopBottomPanel, Ui, Window,
 };
 use serde::{Deserialize, Serialize};
 pub struct NewsCardData {
@@ -32,8 +32,8 @@ pub struct Readlines {
 
 impl Readlines {
     pub fn new() -> Readlines {
-        let config: ReadlinesConfig = confy::load("readlines").unwrap_or_default();
-        
+        let config: ReadlinesConfig = confy::load("readlines", "readlines").unwrap_or_default();
+
         Readlines {
             api_key_initialized: !config.api_key.is_empty(),
             articles: vec![],
@@ -125,10 +125,14 @@ impl Readlines {
                     // Theme changer
                     if theme_btn.clicked() {
                         self.config.dark_mode = !self.config.dark_mode;
-                        if let Err(e) = confy::store("readlines", ReadlinesConfig {
-                            dark_mode: self.config.dark_mode,
-                            api_key: self.config.api_key.to_string(),
-                        }) {
+                        if let Err(e) = confy::store(
+                            "readlines",
+                            "readlines",
+                            ReadlinesConfig {
+                                dark_mode: self.config.dark_mode,
+                                api_key: self.config.api_key.to_string(),
+                            },
+                        ) {
                             tracing::error!("Saving app state failed {}", e);
                         }
 
@@ -145,10 +149,14 @@ impl Readlines {
             ui.label("Enter your https://newsapi.org API-Key here");
             let text_input: Response = ui.text_edit_singleline(&mut self.config.api_key);
             if text_input.lost_focus() && ui.input().key_pressed(egui::Key::Enter) {
-                if let Err(e) = confy::store("readlines", ReadlinesConfig {
-                    dark_mode: self.config.dark_mode,
-                    api_key: self.config.api_key.to_string(),
-                }) {
+                if let Err(e) = confy::store(
+                    "readlines",
+                    "readlines",
+                    ReadlinesConfig {
+                        dark_mode: self.config.dark_mode,
+                        api_key: self.config.api_key.to_string(),
+                    },
+                ) {
                     tracing::error!("Saving app state failed {}", e);
                 }
 
