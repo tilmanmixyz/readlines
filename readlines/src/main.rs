@@ -67,7 +67,7 @@ impl App for Readlines {
             ScrollArea::auto_sized().show(ui, |ui| {
                 self.render_news_cards(ui);
             });
-            render_footer(ui, ctx);
+            render_footer(ctx);
         });
     }
 
@@ -85,7 +85,7 @@ fn render_header(ui: &mut Ui) {
     ui.add(sep);
 }
 
-fn render_footer(ui: &mut Ui, ctx: &CtxRef) {
+fn render_footer(ctx: &CtxRef) {
     TopBottomPanel::bottom("footer").show(ctx, |ui| {
         ui.style_mut().visuals.hyperlink_color = CYAN;
         ui.vertical_centered(|ui| {
