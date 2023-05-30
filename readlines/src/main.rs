@@ -5,13 +5,10 @@ const CYAN: Color32 = Color32::from_rgb(106, 149, 137);
 
 pub(crate) use std::{sync::mpsc::channel, thread};
 
-use eframe::{
-    epi::App,
-    run_native,
-};
 use eframe::egui::{
     self, Color32, CtxRef, Hyperlink, ScrollArea, Separator, TopBottomPanel, Ui, Vec2, Visuals,
 };
+use eframe::{epi::App, run_native};
 
 use newsapi::NewsApi;
 use readlines::{NewsCardData, Readlines};
