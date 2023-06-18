@@ -3,16 +3,27 @@
     naersk.url = "github:nix-community/naersk";
     utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flake-compat = {
       url = "github:edolstra/flake-compat";
       flake = false;
     };
   };
-  outputs = {self, nixpkgs, naersk, utils, ... }:
+  outputs = {self, nixpkgs, naersk, utils, fenix, ... }:
     utils.lib.eachDefaultSystem (system: 
       let
         pkgs = import nixpkgs { inherit system; };
-        naersk-lib = pkgs.callPackage naersk { };
+        rustToolchain = fenix.packages.${system}.fromToolchainFile {
+          dir = ./.;
+          sha256 = pkgs.lib.fakeSha256;
+        };
+        naersk-lib = naersk.lib.${system}.override {
+          cargo = rustToolchain;
+          rustc = rustToolchain;
+        };
         libPath = with pkgs; lib.makeLibraryPath [
           libGL
           libxkbcommon
@@ -46,10 +57,9 @@
           devShell = with pkgs; mkShell {
             nativeBuildInputs = [
               pkg-config
+              rustToolchain
             ];
             buildInputs = [
-              cargo
-              rustc
               rustPackages.clippy
               rustfmt
               tokei
